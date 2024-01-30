@@ -126,14 +126,14 @@ with dataset:
     ari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ARI"]
     ili_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ILI"]
 
-    # Define the desired order for the age groups
-    age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
-    age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
+    # # Define the desired order for the age groups
+    # age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
+    # age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
 
-    # Sort the DataFrame by the desired order
-    sari_data_sorted = sari_data.set_index('age_group').loc[age_group_order].reset_index()
-    ari_data_sorted = ari_data.set_index('age_group').loc[age_group_order].reset_index()
-    ili_data_sorted = ili_data.set_index('age_group').loc[age_group_order_ILI].reset_index()
+    # # Sort the DataFrame by the desired order
+    # sari_data_sorted = sari_data.set_index('age_group').loc[age_group_order].reset_index()
+    # ari_data_sorted = ari_data.set_index('age_group').loc[age_group_order].reset_index()
+    # ili_data_sorted = ili_data.set_index('age_group').loc[age_group_order_ILI].reset_index()
 
     # Create subplots
     fig = make_subplots(rows=1, cols=3, subplot_titles=['SARI', 'ARI', 'ILI'], specs=[[{'type':'domain'}, {'type':'domain'}, {'type':'domain'}]])
@@ -151,11 +151,11 @@ with dataset:
     # add_pie_chart(fig, ili_data, 3, age_group_order)
 
     # # Add pie charts to subplots
-    fig.add_trace(go.Pie(labels=sari_data_sorted['age_group'], values=sari_data_sorted['relative_cases'], name="",
+    fig.add_trace(go.Pie(labels=sari_data['age_group'], values=sari_data['relative_cases'], name="",
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 1)
-    fig.add_trace(go.Pie(labels=ari_data_sorted['age_group'], values=ari_data_sorted['relative_cases'], name="",
+    fig.add_trace(go.Pie(labels=ari_data['age_group'], values=ari_data['relative_cases'], name="",
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 2)
-    fig.add_trace(go.Pie(labels=ili_data_sorted['age_group'], values=ili_data_sorted['relative_cases'], name="",
+    fig.add_trace(go.Pie(labels=ili_data['age_group'], values=ili_data['relative_cases'], name="",
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 3)
 
     # Set subplot titles
