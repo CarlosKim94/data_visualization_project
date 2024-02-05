@@ -55,17 +55,13 @@ with dataset:
     else:
         filtered_df = df3[df3["age_group"].isin(age_group)]
 
-    st.sidebar.header("Syndrome Definition:")
-    st.sidebar.info("SARI: Severe Acute Respiratory Infection"
-                    "  \nARI: Acute Respiratory Illness"
-                    "  \nILI: Influenza-Like Illness")
-
     # Define custom line colors for each syndrome
     line_colors = {'SARI': 'darksalmon', 'ARI': 'steelblue', 'ILI': 'seagreen'}
 
     # Create a line graph
     date_syndrome_df = filtered_df.groupby(by = ["date", "syndrome"], as_index = False)[["relative_cases"]].sum()
     fig = go.Figure()
+    config = {'displayModeBar': False}
 
     # Add a line trace
     for syndrome in date_syndrome_df['syndrome'].unique():
@@ -73,6 +69,19 @@ with dataset:
         fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['relative_cases'],
                                 mode='lines', name=syndrome, line=dict(color=line_colors[syndrome])))
 
+    # Add annotation
+    extra_annotation_text = "ARI: Acute Respiratory Illness <br> SARI: Severe Acute Respiratory Infection <br> ILI: Influenza-Like Illness"
+
+    fig.add_annotation(
+    text=extra_annotation_text,
+    align='center',
+    x=0.5,
+    y=-0.2,
+    xref='paper',
+    yref='paper',
+    showarrow=False,
+    font=dict(size=12)
+    )
     
     # Update layout
     fig.update_layout(title='Emergency Admissions for Respiratory Diseases',
@@ -80,7 +89,7 @@ with dataset:
                       showlegend=True,
                       legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
                       height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config=config)
 
 
     mid_text = """
@@ -95,6 +104,7 @@ with dataset:
 
     # Add a line trace
     for syndrome in date_syndrome_exp_df['syndrome'].unique():
+
         syndrome_data = date_syndrome_exp_df[date_syndrome_exp_df['syndrome'] == syndrome]
         fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['relative_cases'],
                                 mode='lines', name=syndrome, line=dict(color=line_colors[syndrome])))
@@ -102,19 +112,35 @@ with dataset:
         # Add shaded area between expected_lowerbound and expected_upperbound
         fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['expected_lowerbound'],
                                 fill='tonexty', mode='lines',
-                                showlegend=False, line=dict(color=line_colors[syndrome], width=0)))
+                                showlegend=False, line=dict(color=line_colors[syndrome], width=0)
+                                ))
         
         fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['expected_upperbound'],
                                 fill='tonexty', mode='lines',
-                                showlegend=False, line=dict(color=line_colors[syndrome], width=0)))
+                                showlegend=False, line=dict(color=line_colors[syndrome], width=0)
+                                ))
     
+    # Add annotation
+    extra_annotation_text = "ARI: Acute Respiratory Illness <br> SARI: Severe Acute Respiratory Infection <br> ILI: Influenza-Like Illness"
+
+    fig.add_annotation(
+    text=extra_annotation_text,
+    align='center',
+    x=0.5,
+    y=-0.2,
+    xref='paper',
+    yref='paper',
+    showarrow=False,
+    font=dict(size=12)
+    )
+
     # Update layout
     fig.update_layout(title='Emergency Admissions for Respiratory Diseases with Expected Values',
                       yaxis_title='Average number of admissions per emergency department',
                       showlegend=True,
                       legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
                       height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config=config)
 
 
     # Pie charts
@@ -127,35 +153,23 @@ with dataset:
     ili_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ILI"]
 
     # # Define the desired order for the age groups
-    # age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
-    # age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
+    age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
+    age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
 
     # # Sort the DataFrame by the desired order
-    # sari_data_sorted = sari_data.set_index('age_group').loc[age_group_order].reset_index()
-    # ari_data_sorted = ari_data.set_index('age_group').loc[age_group_order].reset_index()
-    # ili_data_sorted = ili_data.set_index('age_group').loc[age_group_order_ILI].reset_index()
+    sari_data_sorted = sari_data.set_index('age_group').loc[age_group_order].reset_index()
+    ari_data_sorted = ari_data.set_index('age_group').loc[age_group_order].reset_index()
+    ili_data_sorted = ili_data.set_index('age_group').loc[age_group_order_ILI].reset_index()
 
     # Create subplots
     fig = make_subplots(rows=1, cols=3, subplot_titles=['SARI', 'ARI', 'ILI'], specs=[[{'type':'domain'}, {'type':'domain'}, {'type':'domain'}]])
 
-    # # Add pie charts to subplots
-    # def add_pie_chart(fig, data, col, legend_order):
-    #     for age_group in legend_order:
-    #         age_group_data = data[data['age_group'] == age_group]
-    #         fig.add_trace(go.Pie(labels=age_group_data['age_group'], values=age_group_data['relative_cases'], hoverinfo='label+value+percent',
-    #                             legendgroup=age_group, showlegend=True if age_group == legend_order[0] else False), 1, col)
-
-    # # Add pie charts for each syndrome
-    # add_pie_chart(fig, sari_data, 1, age_group_order)
-    # add_pie_chart(fig, ari_data, 2, age_group_order)
-    # add_pie_chart(fig, ili_data, 3, age_group_order)
-
-    # # Add pie charts to subplots
-    fig.add_trace(go.Pie(labels=sari_data['age_group'], values=sari_data['relative_cases'], name="",
+    # Add pie charts to subplots
+    fig.add_trace(go.Pie(labels=sari_data_sorted['age_group'], values=sari_data_sorted['relative_cases'], name="", sort=False,
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 1)
-    fig.add_trace(go.Pie(labels=ari_data['age_group'], values=ari_data['relative_cases'], name="",
+    fig.add_trace(go.Pie(labels=ari_data_sorted['age_group'], values=ari_data_sorted['relative_cases'], name="",
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 2)
-    fig.add_trace(go.Pie(labels=ili_data['age_group'], values=ili_data['relative_cases'], name="",
+    fig.add_trace(go.Pie(labels=ili_data_sorted['age_group'], values=ili_data_sorted['relative_cases'], name="",
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 3)
 
     # Set subplot titles
@@ -163,11 +177,10 @@ with dataset:
     fig.update_xaxes(title_text='ARI', row=1, col=2)
     fig.update_xaxes(title_text='ILI', row=1, col=3)
 
-
     # Update layout
     fig.update_layout(title='Syndrome Types sorted from most to least severe by age')
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config=config)
 
 
     # Data source
