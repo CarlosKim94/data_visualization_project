@@ -11,12 +11,14 @@ Download the repository to your own folder.
 There are 2 ways to run the application on your local machine:
 
 1. To automatically install required python libraries and run the application:
-'''python
+
+'''
 make all
 '''
 
 2. To run the application without installing required python libraries:
-'''python
+
+'''
 streamlit run main.py
 '''
 
