@@ -10,17 +10,14 @@ header = st.container()
 dataset = st.container()
 
 with header:
-    st.title('Emergency Admission Surveillance Data')
+    st.title('Emergency Admission for Respiratory Related Diseases')
     st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
+
     introduction = """
-    The data from emergency department documentation is routinely gathered as part of the 
-    AKTIN emergency admission register. The data include information on the presenting ED, 
-    age groups, reason for admission classified according to the Canadian Emergency 
-    Department Information System - Presenting Complaint List (CEDIS-PCL3.0), 
-    diagnoses coded according to the International Classification of Diseases (ICD-10), 
-    and information on inpatient admission following the ED visit.
+    Data on emergency admissions for respiratory diseases are collected daily through the AKTIN project and published by the Robert Koch Institute (RKI). This dataset records the report date, the number of emergency departments contributing data each day, and their average admissions. It also details the age groups of the patients and their diagnoses, which are coded according to the International Classification of Diseases (ICD-10).
     """
-    st.text(introduction)
+
+    st.markdown(introduction)
 
 with dataset:
     df = pd.read_csv('download/Notaufnahmesurveillance_cleaned.csv')
@@ -84,19 +81,19 @@ with dataset:
     )
     
     # Update layout
-    fig.update_layout(title='Emergency Admissions for Respiratory Diseases',
-                      yaxis_title='Average number of admissions per emergency department',
+    fig.update_layout(title='Emergency Admissions over time',
+                      yaxis_title='Average number of admissions per ED',
                       showlegend=True,
                       legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
                       height=600)
     st.plotly_chart(fig, use_container_width=True, config=config)
 
+    st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
 
     mid_text = """
-    For better understanding and identification of disease peaks over time, the expected value of 
-    admissions and an associated 80% prediction interval are calculated and can be visualized below.
+    For better understanding and identification of peaks over time, the expected value of admissions and an associated 80% prediction interval can be visualized below.
     """
-    st.text(mid_text)
+    st.markdown(mid_text)
 
     # Create a line graph with expected values
     date_syndrome_exp_df = filtered_df.groupby(by = ["date", "syndrome"], as_index = False)[["relative_cases", "expected_lowerbound","expected_upperbound"]].sum()
@@ -135,8 +132,8 @@ with dataset:
     )
 
     # Update layout
-    fig.update_layout(title='Emergency Admissions for Respiratory Diseases with Expected Values',
-                      yaxis_title='Average number of admissions per emergency department',
+    fig.update_layout(title='Emergency Admissions over time with Expected Values',
+                      yaxis_title='Average number of admissions per ED',
                       showlegend=True,
                       legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
                       height=600)
@@ -173,12 +170,19 @@ with dataset:
                          hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 3)
 
     # Set subplot titles
-    fig.update_xaxes(title_text='SARI', row=1, col=1)
-    fig.update_xaxes(title_text='ARI', row=1, col=2)
-    fig.update_xaxes(title_text='ILI', row=1, col=3)
+    fig.update_xaxes(title_text='SARI: Severe Acute Respiratory Infection', row=1, col=1)
+    fig.update_xaxes(title_text='ARI: Acute Respiratory Illness', row=1, col=2)
+    fig.update_xaxes(title_text='ILI: Influenza-Like Illness', row=1, col=3)
 
     # Update layout
-    fig.update_layout(title='Syndrome Types sorted from most to least severe by age')
+    fig.update_layout(title='Syndrome Types by Age Group')
+
+    st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
+
+    mid_text_pie = """
+    To show which age groups are most affected by different types of respiratory problems, we have created the pie charts below. These charts are arranged from the most serious to the least serious conditions.
+    """
+    st.markdown(mid_text_pie)
 
     st.plotly_chart(fig, use_container_width=True, config=config)
 
