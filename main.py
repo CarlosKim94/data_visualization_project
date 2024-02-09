@@ -103,6 +103,10 @@ with dataset:
     """
     st.markdown(mid_text)
 
+    # Reversed syndrome order (repeating order, please do not delete)
+    # it's needed to sort the legend for the second line chart 
+    syndrome_order = ['ILI','ARI','SARI']
+
     # Create a line graph with expected values
     date_syndrome_exp_df = filtered_df.groupby(by = ["date", "syndrome"], as_index = False)[["relative_cases", "expected_lowerbound","expected_upperbound"]].sum()
     fig = go.Figure()
