@@ -22,6 +22,12 @@ with header:
 with dataset:
     df = pd.read_csv('download/Notaufnahmesurveillance_cleaned.csv')
 
+    # Desired order for the age groups
+    age_group_order = ['0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+','00+']
+
+    # Ensure the age group filter options are sorted according to the predefined order
+    age_group_options = [age for age in age_group_order if age in df['age_group'].unique()]
+
     st.sidebar.header("Filter: ")
 
     # Filter for syndrome
@@ -32,7 +38,7 @@ with dataset:
         df2 = df[df['syndrome'].isin(syndrome)]
 
     # Filter for age group
-    age_group = st.sidebar.multiselect("Age Group", df2['age_group'].unique())
+    age_group = st.sidebar.multiselect("Age Group", options=age_group_options)
     if not age_group:
         df3 = df2.copy()
     else:
@@ -82,7 +88,7 @@ with dataset:
     
     # Update layout
     fig.update_layout(title='Emergency Admissions over time',
-                      yaxis_title='Average number of admissions per ED',
+                      yaxis_title='Admissions per Emergency Deparment',
                       showlegend=True,
                       legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
                       height=600)
@@ -133,7 +139,7 @@ with dataset:
 
     # Update layout
     fig.update_layout(title='Emergency Admissions over time with Expected Values',
-                      yaxis_title='Average number of admissions per ED',
+                      yaxis_title='Admissions per Emergency Deparment',
                       showlegend=True,
                       legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
                       height=600)
@@ -144,31 +150,34 @@ with dataset:
 
     age_syndrome_df = filtered_df.groupby(by = ["age_group", "syndrome"], as_index = False)["relative_cases"].sum()
 
+    age_syndrome_df['age_group'] = pd.Categorical(age_syndrome_df['age_group'], categories=age_group_order, ordered=True)
+    age_syndrome_df = age_syndrome_df.sort_values('age_group')
+
     # Filter data for each syndrome
     sari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "SARI"]
     ari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ARI"]
     ili_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ILI"]
 
     # # Define the desired order for the age groups
-    age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
-    age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
+    #age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
+    #age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
 
-    # # Sort the DataFrame by the desired order
-    sari_data_sorted = sari_data.set_index('age_group').loc[age_group_order].reset_index()
-    ari_data_sorted = ari_data.set_index('age_group').loc[age_group_order].reset_index()
-    ili_data_sorted = ili_data.set_index('age_group').loc[age_group_order_ILI].reset_index()
+    # Filter data for each syndrome (assuming 'SARI', 'ARI', 'ILI' are all the syndromes you have)
+    sari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "SARI"]
+    ari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ARI"]
+    ili_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ILI"]
 
-    # Create subplots
+    # Create subplots for each syndrome's pie chart
     fig = make_subplots(rows=1, cols=3, subplot_titles=['SARI', 'ARI', 'ILI'], specs=[[{'type':'domain'}, {'type':'domain'}, {'type':'domain'}]])
 
-    # Add pie charts to subplots
-    fig.add_trace(go.Pie(labels=sari_data_sorted['age_group'], values=sari_data_sorted['relative_cases'], name="", sort=False,
-                         hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 1)
-    fig.add_trace(go.Pie(labels=ari_data_sorted['age_group'], values=ari_data_sorted['relative_cases'], name="",
-                         hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 2)
-    fig.add_trace(go.Pie(labels=ili_data_sorted['age_group'], values=ili_data_sorted['relative_cases'], name="",
-                         hovertemplate = "Age Group:                               %{label} <br>% of Total Relative Cases: %{percent}"), 1, 3)
-
+    # Add pie charts to subplots without sorting as data is already sorted
+    fig.add_trace(go.Pie(labels=sari_data['age_group'], values=sari_data['relative_cases'], name="SARI",
+                        sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 1)
+    fig.add_trace(go.Pie(labels=ari_data['age_group'], values=ari_data['relative_cases'], name="ARI",
+                        sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 2)
+    fig.add_trace(go.Pie(labels=ili_data['age_group'], values=ili_data['relative_cases'], name="ILI",
+                        sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 3)
+    
     # Set subplot titles
     fig.update_xaxes(title_text='SARI: Severe Acute Respiratory Infection', row=1, col=1)
     fig.update_xaxes(title_text='ARI: Acute Respiratory Illness', row=1, col=2)
@@ -180,7 +189,7 @@ with dataset:
     st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
 
     mid_text_pie = """
-    To show which age groups are most affected by different types of respiratory problems, we have created the pie charts below. These charts are arranged from the most serious to the least serious conditions.
+    To show which age groups are most affected by different types of respiratory problems, we have created the pie charts below. These charts are arranged from the most to the least serious conditions.
     """
     st.markdown(mid_text_pie)
 
