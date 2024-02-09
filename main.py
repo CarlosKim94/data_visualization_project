@@ -57,40 +57,43 @@ with dataset:
     else:
         filtered_df = df3[df3["age_group"].isin(age_group)]
 
+    # Predefined syndrome order
+    syndrome_order = ['SARI', 'ARI', 'ILI']
+
     # Define custom line colors for each syndrome
     line_colors = {'SARI': 'darksalmon', 'ARI': 'steelblue', 'ILI': 'seagreen'}
+
+    # Define the description for each syndrome
+    syndrome_descriptions = {
+    'SARI': 'SARI: Severe Acute Respiratory Infection',
+    'ARI': 'ARI: Acute Respiratory Illness',
+    'ILI': 'ILI: Influenza-Like Illness'
+    }
 
     # Create a line graph
     date_syndrome_df = filtered_df.groupby(by = ["date", "syndrome"], as_index = False)[["relative_cases"]].sum()
     fig = go.Figure()
     config = {'displayModeBar': False}
 
-    # Add a line trace
-    for syndrome in date_syndrome_df['syndrome'].unique():
-        syndrome_data = date_syndrome_df[date_syndrome_df['syndrome'] == syndrome]
-        fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['relative_cases'],
-                                mode='lines', name=syndrome, line=dict(color=line_colors[syndrome])))
-
-    # Add annotation
-    extra_annotation_text = "ARI: Acute Respiratory Illness <br> SARI: Severe Acute Respiratory Infection <br> ILI: Influenza-Like Illness"
-
-    fig.add_annotation(
-    text=extra_annotation_text,
-    align='center',
-    x=0.5,
-    y=-0.2,
-    xref='paper',
-    yref='paper',
-    showarrow=False,
-    font=dict(size=12)
-    )
+    # Add a line trace with descriptions in the legend
+    for syndrome_key in syndrome_order:
+        if syndrome_key in date_syndrome_df['syndrome'].unique():
+            syndrome_data = date_syndrome_df[date_syndrome_df['syndrome'] == syndrome_key]
+            fig.add_trace(go.Scatter(
+                x=syndrome_data['date'], 
+                y=syndrome_data['relative_cases'],
+                mode='lines', 
+                name=syndrome_descriptions[syndrome_key], # Use the description as the legend name
+                line=dict(color=line_colors[syndrome_key])
+            ))
     
     # Update layout
     fig.update_layout(title='Emergency Admissions over time',
                       yaxis_title='Admissions per Emergency Deparment',
                       showlegend=True,
-                      legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
-                      height=600)
+                      legend=dict(x=0.5, y=-0.2, xanchor='center', yanchor='top', orientation='h'),
+                      height=600
+                      )
     st.plotly_chart(fig, use_container_width=True, config=config)
 
     st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
@@ -105,43 +108,43 @@ with dataset:
     fig = go.Figure()
 
     # Add a line trace
-    for syndrome in date_syndrome_exp_df['syndrome'].unique():
+    for syndrome_key in syndrome_order:
+        if syndrome_key in date_syndrome_exp_df['syndrome'].unique():
+            syndrome_data = date_syndrome_exp_df[date_syndrome_exp_df['syndrome'] == syndrome_key]
+            fig.add_trace(go.Scatter(
+                x=syndrome_data['date'], 
+                y=syndrome_data['relative_cases'],
+                mode='lines', 
+                name=syndrome_descriptions[syndrome_key],
+                line=dict(color=line_colors[syndrome_key])
+            ))
 
-        syndrome_data = date_syndrome_exp_df[date_syndrome_exp_df['syndrome'] == syndrome]
-        fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['relative_cases'],
-                                mode='lines', name=syndrome, line=dict(color=line_colors[syndrome])))
-        
-        # Add shaded area between expected_lowerbound and expected_upperbound
-        fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['expected_lowerbound'],
-                                fill='tonexty', mode='lines',
-                                showlegend=False, line=dict(color=line_colors[syndrome], width=0)
-                                ))
-        
-        fig.add_trace(go.Scatter(x=syndrome_data['date'], y=syndrome_data['expected_upperbound'],
-                                fill='tonexty', mode='lines',
-                                showlegend=False, line=dict(color=line_colors[syndrome], width=0)
-                                ))
-    
-    # Add annotation
-    extra_annotation_text = "ARI: Acute Respiratory Illness <br> SARI: Severe Acute Respiratory Infection <br> ILI: Influenza-Like Illness"
-
-    fig.add_annotation(
-    text=extra_annotation_text,
-    align='center',
-    x=0.5,
-    y=-0.2,
-    xref='paper',
-    yref='paper',
-    showarrow=False,
-    font=dict(size=12)
-    )
+            # Add shaded area between expected_lowerbound and expected_upperbound
+            fig.add_trace(go.Scatter(
+                x=syndrome_data['date'], 
+                y=syndrome_data['expected_lowerbound'],
+                fill='tonexty',
+                mode='lines',
+                showlegend=False,
+                line=dict(color=line_colors[syndrome_key], width=0)
+            ))
+            
+            fig.add_trace(go.Scatter(
+                x=syndrome_data['date'], 
+                y=syndrome_data['expected_upperbound'],
+                fill='tonexty',
+                mode='lines',
+                showlegend=False,
+                line=dict(color=line_colors[syndrome_key], width=0)
+            ))
 
     # Update layout
     fig.update_layout(title='Emergency Admissions over time with Expected Values',
                       yaxis_title='Admissions per Emergency Deparment',
                       showlegend=True,
-                      legend=dict(x=0.93, y=0.95, xanchor='left', yanchor='top'),
-                      height=600)
+                      legend=dict(x=0.5, y=-0.2, xanchor='center', yanchor='top', orientation='h'),
+                      height=600
+                    )
     st.plotly_chart(fig, use_container_width=True, config=config)
 
 
@@ -156,10 +159,6 @@ with dataset:
     sari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "SARI"]
     ari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ARI"]
     ili_data = age_syndrome_df[age_syndrome_df["syndrome"] == "ILI"]
-
-    # # Define the desired order for the age groups
-    #age_group_order = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+']
-    #age_group_order_ILI = ['00+', '0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79']
 
     # Filter data for each syndrome (assuming 'SARI', 'ARI', 'ILI' are all the syndromes you have)
     sari_data = age_syndrome_df[age_syndrome_df["syndrome"] == "SARI"]
