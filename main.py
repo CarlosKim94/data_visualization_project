@@ -14,10 +14,9 @@ with header:
     st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
 
     introduction = """
-    Data on emergency admissions for respiratory diseases are collected daily through the AKTIN project and published by the Robert Koch Institute (RKI). This dataset records the report date, the number of emergency departments contributing data each day, and their average admissions. It also details the age groups of the patients and their diagnoses, which are coded according to the International Classification of Diseases (ICD-10).
+    The data on emergency admissions for respiratory diseases is collected daily as part of the AKTIN registration and published by the Robert Koch Institute (RKI). The dataset includes the date of the admission report, the amount of emergency departments that reported on that day, the average of the admissions per emergency department, the patient's age group and the diagnoses coded according to the [International Classification of Diseases (ICD-10)](https://www.dimdi.de/static/de/klassifikationen/icd/icd-10-gm/kode-suche/htmlgm2019/).
     """
-
-    st.markdown(introduction)
+    st.markdown(introduction, unsafe_allow_html=True)
 
 with dataset:
     df = pd.read_csv('download/Notaufnahmesurveillance_cleaned.csv')
