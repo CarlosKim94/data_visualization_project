@@ -184,8 +184,10 @@ with dataset:
                         marker=dict(colors=[age_group_colors[age] for age in sari_data['age_group']]),  # Apply color mapping to pie slices
                         sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 1)
     fig.add_trace(go.Pie(labels=ari_data['age_group'], values=ari_data['relative_cases'], name="ARI",
+                        marker=dict(colors=[age_group_colors[age] for age in ari_data['age_group']]),  # Apply color mapping to pie slices
                         sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 2)
     fig.add_trace(go.Pie(labels=ili_data['age_group'], values=ili_data['relative_cases'], name="ILI",
+                        marker=dict(colors=[age_group_colors[age] for age in ili_data['age_group']]),  # Apply color mapping to pie slices
                         sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 3)
     
     # Set subplot titles
