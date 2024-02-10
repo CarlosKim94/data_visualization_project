@@ -22,9 +22,9 @@ with dataset:
     df = pd.read_csv('download/Notaufnahmesurveillance_cleaned.csv')
 
     #Color Palette Age Group
-    color_palette = ['#1ea7fd','#ff9f1c','#b8cc3a','#7a306c','#007f5f',
-                     '#ff61a6','#ffc300','#d1495b','#6e7e99']
-
+    color_palette = ['#A7C6DA','#CDC7E5','#C9E4CA','#AD343E','#502419',
+                     '#EFCB68','#476A6F','#CEA0AE','#7C3238']
+ 
     # Desired order for the age groups
     age_group_order = ['0-4', '5-9', '10-14', '15-19', '20-39', '40-59', '60-79', '80+','00+']
     
@@ -68,7 +68,7 @@ with dataset:
     syndrome_order = ['SARI', 'ARI', 'ILI']
 
     # Define custom line colors for each syndrome
-    line_colors = {'SARI': '#ff6b6b', 'ARI': '#1f7874', 'ILI': '#2c3e50'}
+    line_colors = {'SARI': '#94C9A9', 'ARI': '#564256', 'ILI': '#FC814A'}
 
     # Define the description for each syndrome
     syndrome_descriptions = {
