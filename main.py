@@ -130,20 +130,20 @@ with dataset:
                 line=dict(color=line_colors[syndrome_key],width=1)
             ))
 
-            # Add shaded area between expected_lowerbound and expected_upperbound
+            # Add a line trace for the upper bound
             fig.add_trace(go.Scatter(
                 x=syndrome_data['date'], 
-                y=syndrome_data['expected_lowerbound'],
-                fill='tonexty',
+                y=syndrome_data['expected_upperbound'],
                 mode='lines',
                 showlegend=False,
                 line=dict(color=line_colors[syndrome_key], width=0)
             ))
-            
+
+            # Add shaded area between expected_lowerbound and expected_upperbound
             fig.add_trace(go.Scatter(
                 x=syndrome_data['date'], 
-                y=syndrome_data['expected_upperbound'],
-                fill='tonexty',
+                y=syndrome_data['expected_lowerbound'],
+                fill='tonexty', # This will now fill between this trace and the previous one (upper bound)
                 mode='lines',
                 showlegend=False,
                 line=dict(color=line_colors[syndrome_key], width=0)
