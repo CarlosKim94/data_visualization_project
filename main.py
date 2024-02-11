@@ -92,7 +92,8 @@ with dataset:
                 y=syndrome_data['relative_cases'],
                 mode='lines', 
                 name=syndrome_descriptions[syndrome_key], # Use the description as the legend name
-                line=dict(color=line_colors[syndrome_key],width=1.5)
+                line=dict(color=line_colors[syndrome_key],width=1.5),
+                hovertemplate = " %{y:.0f} admissions on %{x}"
             ))
     
     # Update layout
@@ -128,7 +129,8 @@ with dataset:
                 y=syndrome_data['relative_cases'],
                 mode='lines', 
                 name=syndrome_descriptions[syndrome_key],
-                line=dict(color=line_colors[syndrome_key],width=1)
+                line=dict(color=line_colors[syndrome_key],width=1.5),
+                hovertemplate = " %{y:.0f} admissions on %{x}"
             ))
 
             # Add a line trace for the upper bound
@@ -137,7 +139,8 @@ with dataset:
                 y=syndrome_data['expected_upperbound'],
                 mode='lines',
                 showlegend=False,
-                line=dict(color=line_colors[syndrome_key], width=0)
+                line=dict(color=line_colors[syndrome_key], width=0),
+                hovertemplate = "Prediction Interval Upperbound: %{y:.0f}"
             ))
 
             # Add shaded area between expected_lowerbound and expected_upperbound
@@ -147,7 +150,8 @@ with dataset:
                 fill='tonexty', # This will now fill between this trace and the previous one (upper bound)
                 mode='lines',
                 showlegend=False,
-                line=dict(color=line_colors[syndrome_key], width=0)
+                line=dict(color=line_colors[syndrome_key], width=0),
+                hovertemplate = "Prediction Interval Lowerbound: %{y:.0f}"
             ))
 
     # Update layout
@@ -183,13 +187,13 @@ with dataset:
     # Add pie charts to subplots without sorting as data is already sorted
     fig.add_trace(go.Pie(labels=sari_data['age_group'], values=sari_data['relative_cases'], name="SARI",
                         marker=dict(colors=[age_group_colors[age] for age in sari_data['age_group']]),  # Apply color mapping to pie slices
-                        sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 1)
+                        sort=False, hovertemplate = " %{percent} of the admissions with diagnosis SARI <br>are patients in the group age %{label}"), 1, 1)
     fig.add_trace(go.Pie(labels=ari_data['age_group'], values=ari_data['relative_cases'], name="ARI",
                         marker=dict(colors=[age_group_colors[age] for age in ari_data['age_group']]),  # Apply color mapping to pie slices
-                        sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 2)
+                        sort=False, hovertemplate = " %{percent} of the admissions with diagnosis ARI <br>are patients in the group age %{label}"), 1, 2)
     fig.add_trace(go.Pie(labels=ili_data['age_group'], values=ili_data['relative_cases'], name="ILI",
                         marker=dict(colors=[age_group_colors[age] for age in ili_data['age_group']]),  # Apply color mapping to pie slices
-                        sort=False, hovertemplate = "Age Group: %{label} <br>% Total Admissions: %{percent}"), 1, 3)
+                        sort=False, hovertemplate = " %{percent} of the admissions with diagnosis ILI <br>are patients in the group age %{label}"), 1, 3)
     
     # Set subplot titles
     fig.update_xaxes(title_text='SARI: Severe Acute Respiratory Infection', row=1, col=1)
@@ -197,7 +201,12 @@ with dataset:
     fig.update_xaxes(title_text='ILI: Influenza-Like Illness', row=1, col=3)
 
     # Update layout
-    fig.update_layout(title='Syndrome Types by Age Group')
+    fig.update_layout(title='Syndrome Types by Age Group',
+                    #hoverlabel=dict(
+                    #    bgcolor="white",
+                    #    font_size=16) 
+                    )
+    
 
     st.markdown('<style>div.block-container{padding-top:1rem;}</style>', unsafe_allow_html=True)
 
