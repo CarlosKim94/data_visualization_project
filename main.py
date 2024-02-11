@@ -220,3 +220,8 @@ with dataset:
 
     # Data source
     st.markdown("*Data Source:* https://github.com/robert-koch-institut/Daten_der_Notaufnahmesurveillance")
+
+    data_source_desc = """
+    The data is based on individual willingness to participate in emergency department surveillance reporting as part of the AKTIN emergency room register, and then made available to the RKI. The processing, preparation and automated quality testing as well as the publication of the data are carried out by the [MF 4 | department Specialist and research data management](https://www.rki.de/DE/Content/Institut/OrgEinheiten/MFI/MF4/mf4_node.html).
+    """
+    st.markdown(data_source_desc)
