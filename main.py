@@ -68,7 +68,8 @@ with dataset:
     syndrome_order = ['SARI', 'ARI', 'ILI']
 
     # Define custom line colors for each syndrome
-    line_colors = {'SARI': '#94C9A9', 'ARI': '#564256', 'ILI': '#FC814A'}
+    #line_colors = {'SARI': '#94C9A9', 'ARI': '#564256', 'ILI': '#FC814A'}
+    line_colors = {'SARI': 'darksalmon', 'ARI': 'steelblue', 'ILI': 'seagreen'}
 
     # Define the description for each syndrome
     syndrome_descriptions = {
@@ -91,7 +92,7 @@ with dataset:
                 y=syndrome_data['relative_cases'],
                 mode='lines', 
                 name=syndrome_descriptions[syndrome_key], # Use the description as the legend name
-                line=dict(color=line_colors[syndrome_key],width=1)
+                line=dict(color=line_colors[syndrome_key],width=1.5)
             ))
     
     # Update layout
